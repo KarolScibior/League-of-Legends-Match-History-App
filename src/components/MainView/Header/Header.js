@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
+import { useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BoldText from '../../CustomText/BoldText';
 import theme from '../../../utils/theme';
+import { actions } from '../../../redux/ducks';
 
 const Header = () => {
   const [inputValue, setInputValue] = useState('');
+
+  const dispatch = useDispatch();
+  const pullSummonerInfo = summonerName => dispatch(actions.pullSummonerInfo(summonerName));
 
   return (
     <View style={styles.container}>
@@ -18,10 +23,11 @@ const Header = () => {
         />
         <TextInput
           style={styles.searchBar}
+          placeholder='Enter summoner name...'
           value={inputValue}
           onChangeText={text => setInputValue(text)}
           onSubmitEditing={() => {
-            console.log(inputValue);
+            pullSummonerInfo(inputValue);
             setInputValue('');
           }}
         />
