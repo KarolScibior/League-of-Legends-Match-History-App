@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import theme from '../../utils/theme';
+import Header from './Header/Header';
 
 const MainView = () => {
+
   return (
     <View style={styles.container}>
-      <Text>This will be my league of legends match history app</Text>
+      <Header />
     </View>
   );
 };
@@ -12,9 +15,9 @@ const MainView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.background,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 24
   },
 });
 
