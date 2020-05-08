@@ -1,8 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { useSelector } from 'react-redux';
+import { LEAGUE_PATCH } from 'react-native-dotenv';
 import BoldText from '../../../../CustomText/BoldText';
 import theme from '../../../../../utils/theme';
+import MasteriesView from './MasteriesView/MasteriesView';
 
 const RegularView = () => {
   const summonerInfo = useSelector(state => state.summonerInfo);
@@ -12,11 +14,12 @@ const RegularView = () => {
       <Image
         style={styles.profileIcon}
         source={{
-          uri: `http://ddragon.leagueoflegends.com/cdn/10.9.1/img/profileicon/${summonerInfo.profileIconId}.png`
+          uri: `http://ddragon.leagueoflegends.com/cdn/${LEAGUE_PATCH}/img/profileicon/${summonerInfo.profileIconId}.png`
         }}
       />
       <BoldText style={styles.title} text={summonerInfo.name} />
-      <BoldText text={`Level ${summonerInfo.summonerLevel}`} />
+      <BoldText style={styles.level} text={`Level ${summonerInfo.summonerLevel}`} />
+      <MasteriesView />
     </View>
   );
 }
@@ -33,6 +36,10 @@ const styles = StyleSheet.create({
     color: theme.colors.primaryText,
     fontSize: 24,
     marginTop: 8
+  },
+  level: {
+    color: theme.colors.secondaryText,
+    fontSize: 20
   },
   profileIcon: {
     width: 200,

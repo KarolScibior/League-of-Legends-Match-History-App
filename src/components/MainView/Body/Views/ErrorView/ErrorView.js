@@ -12,7 +12,7 @@ const ErrorView = () => {
           uri: 'https://how2play.pl/wp-content/uploads/2017/09/ahri2-1.jpg'
         }}
       />
-      <BoldText style={styles.title} text='Summoner not found!' />
+      <BoldText style={styles.title} text='Something went wrong!' />
     </View>
   );
 }

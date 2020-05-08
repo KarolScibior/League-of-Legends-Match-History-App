@@ -1,11 +1,13 @@
 import axios from 'axios';
-import { API_KEY } from 'react-native-dotenv';
+import { API_KEY, LEAGUE_PATCH } from 'react-native-dotenv';
 
 export const SET_VIEW = 'SET_VIEW';
 export const PULL_SUMMONER_INFO = 'PULL_SUMMONER_INFO';
 export const ADD_SUMMONER_INFO = 'ADD_SUMMONER_INFO';
 export const PULL_CHAMPIONS_MASTERY = 'PULL_CHAMPIONS_MASTERY';
 export const ADD_CHAMPIONS_MASTERY = 'ADD_CHAMPIONS_MASTERY';
+export const PULL_CHAMPION_DATA = 'PULL_CHAMPION_DATA';
+export const ADD_CHAMPION_DATA = 'ADD_CHAMPION_DATA';
 
 export const actions = {
   setView: view => ({
@@ -43,10 +45,32 @@ export const actions = {
           'X-Riot-Token': API_KEY
         }
       })
-      .then(res => {
+      .then(async res => {
         const topThree = res.data.slice(0, 3);
         dispatch(actions.addChampionsMastery(topThree));
+        await topThree.forEach(async item => {
+          await dispatch(actions.pullChampionData(item.championId));
+        });
         dispatch(actions.setView('summoner'))
+      })
+      .catch(err => {
+        dispatch(actions.setView('error'));
+      })
+  }),
+  addChampionData: championData => ({
+    type: ADD_CHAMPION_DATA,
+    payload: championData
+  }),
+  pullChampionData: championId => (dispatch => {
+    axios
+      .get(`http://ddragon.leagueoflegends.com/cdn/${LEAGUE_PATCH}/data/en_US/champion.json`)
+      .then(res => {
+        const arr = res.data.data;
+
+
+
+        const championData = Object.entries(res.data.data)[championId];
+        dispatch(actions.addChampionData(championData));
       })
       .catch(err => {
         dispatch(actions.setView('error'));
@@ -57,7 +81,8 @@ export const actions = {
 const initialState = {
   view: 'regular',
   summonerInfo: {},
-  championsMastery: []
+  championsMastery: [],
+  championsData: []
 };
 
 export default rootReducer = (state = initialState, action) => {
@@ -78,6 +103,12 @@ export default rootReducer = (state = initialState, action) => {
         return {
           ...state,
           championsMastery: action.payload
+        }
+
+      case ADD_CHAMPION_DATA:
+        return {
+          ...state,
+          championsData: [...state.championsData, action.payload]
         }
 
     default:
