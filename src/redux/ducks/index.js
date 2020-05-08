@@ -8,6 +8,7 @@ export const PULL_CHAMPIONS_MASTERY = 'PULL_CHAMPIONS_MASTERY';
 export const ADD_CHAMPIONS_MASTERY = 'ADD_CHAMPIONS_MASTERY';
 export const PULL_CHAMPION_DATA = 'PULL_CHAMPION_DATA';
 export const ADD_CHAMPION_DATA = 'ADD_CHAMPION_DATA';
+export const RESET_CHAMPIONS_DATA = 'RESET_CHAMPIONS_DATA';
 
 export const actions = {
   setView: view => ({
@@ -48,6 +49,7 @@ export const actions = {
       .then(async res => {
         const topThree = res.data.slice(0, 3);
         dispatch(actions.addChampionsMastery(topThree));
+        dispatch(actions.resetChampionsData());
         await topThree.forEach(async item => {
           await dispatch(actions.pullChampionData(item.championId));
         });
@@ -61,15 +63,19 @@ export const actions = {
     type: ADD_CHAMPION_DATA,
     payload: championData
   }),
+  resetChampionsData: () => ({ type: RESET_CHAMPIONS_DATA }),
   pullChampionData: championId => (dispatch => {
     axios
       .get(`http://ddragon.leagueoflegends.com/cdn/${LEAGUE_PATCH}/data/en_US/champion.json`)
       .then(res => {
-        const arr = res.data.data;
-
-
-
-        const championData = Object.entries(res.data.data)[championId];
+        const arr = Object.entries(res.data.data);
+        let championData;
+        arr.forEach((item, index) => {
+          let id = Number(Object.entries(arr[index][1])[2][1]);
+          if (id === championId) {
+            championData = item;
+          };
+        })
         dispatch(actions.addChampionData(championData));
       })
       .catch(err => {
@@ -109,6 +115,12 @@ export default rootReducer = (state = initialState, action) => {
         return {
           ...state,
           championsData: [...state.championsData, action.payload]
+        }
+
+      case RESET_CHAMPIONS_DATA:
+        return {
+          ...state,
+          championsData: []
         }
 
     default:
