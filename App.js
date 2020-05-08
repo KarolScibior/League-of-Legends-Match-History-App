@@ -1,19 +1,25 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from 'react-redux';
+import { useFonts } from '@use-expo/font';
+import { AppLoading } from 'expo';
+import store from './src/redux/store';
+import MainView from './src/components/MainView';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
-}
+const App = () => {
+  const [fontsLoaded] = useFonts({
+    'montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+    'montserratBold': require('./assets/fonts/Montserrat-Bold.ttf')
+  })
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  if (!fontsLoaded) {
+    return <AppLoading />
+  } else {
+    return (
+      <Provider store={store}>
+        <MainView />
+      </Provider>
+    );
+  }
+};
+
+export default App;
