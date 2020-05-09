@@ -61,7 +61,8 @@ export const actions = {
         }
       })
       .then(res => {
-        dispatch(actions.addRankedInfo(res.data));
+        const rankedInfo = res.data.find(item => item.queueType === 'RANKED_SOLO_5x5');
+        dispatch(actions.addRankedInfo(rankedInfo));
       })
       .catch(err => {
         dispatch(actions.setView('error'));
@@ -148,7 +149,7 @@ export default rootReducer = (state = initialState, action) => {
       case ADD_RANKED_INFO:
         return {
           ...state,
-          rankedInfo: action.payload[1]
+          rankedInfo: action.payload
         }
 
     default:

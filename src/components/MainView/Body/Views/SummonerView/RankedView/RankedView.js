@@ -8,7 +8,6 @@ const RankedView = () => {
   const rankedInfo = useSelector(state => state.rankedInfo);
 
   const renderDivision = () => {
-    console.log(rankedInfo);
     if (rankedInfo !== undefined) {
       return (
         <>
