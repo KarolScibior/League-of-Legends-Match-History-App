@@ -6,6 +6,7 @@ import BoldText from '../../../../CustomText/BoldText';
 import theme from '../../../../../utils/theme';
 import RankedView from './RankedView/RankedView';
 import MasteriesView from './MasteriesView/MasteriesView';
+import MatchHistoryView from './MatchHistoryView/MatchHistoryView';
 
 const RegularView = () => {
   const summonerInfo = useSelector(state => state.summonerInfo);
@@ -22,6 +23,7 @@ const RegularView = () => {
       <BoldText style={styles.level} text={`Level ${summonerInfo.summonerLevel}`} />
       <RankedView />
       <MasteriesView />
+      <MatchHistoryView />
     </View>
   );
 }
