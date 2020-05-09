@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { LEAGUE_PATCH } from 'react-native-dotenv';
 import BoldText from '../../../../CustomText/BoldText';
 import theme from '../../../../../utils/theme';
+import RankedView from './RankedView/RankedView';
 import MasteriesView from './MasteriesView/MasteriesView';
 
 const RegularView = () => {
@@ -19,6 +20,7 @@ const RegularView = () => {
       />
       <BoldText style={styles.title} text={summonerInfo.name} />
       <BoldText style={styles.level} text={`Level ${summonerInfo.summonerLevel}`} />
+      <RankedView />
       <MasteriesView />
     </View>
   );

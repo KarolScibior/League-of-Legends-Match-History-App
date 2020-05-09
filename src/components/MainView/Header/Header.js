@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     height: 100,
     alignItems: 'center',
     justifyContent: 'space-around',
-    marginBottom: 16
+    //marginBottom: 16
   },
   title: {
     color: theme.colors.text,

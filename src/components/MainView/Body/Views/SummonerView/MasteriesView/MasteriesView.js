@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import BoldText from '../../../../../CustomText/BoldText';
 import theme from '../../../../../../utils/theme';
@@ -8,10 +8,25 @@ import ChampionIcons from './ChampionIcons';
 const MasteriesView = () => {
   const masteryInfo = useSelector(state => state.championsMastery);
 
+  const getMasteryPoints = () => {
+    if (masteryInfo !== undefined) {
+      return masteryInfo.map(item => {
+        return {
+          championLevel: item.championLevel,
+          championPoints: item.championPoints
+        };
+      });
+    } else {
+      return undefined;
+    }
+  }
+
+  const masteryPoints = getMasteryPoints();
+
   return (
     <View style={styles.mainContainer}>
       <BoldText style={styles.title} text='Top 3 Champions' />
-      <ChampionIcons />
+      <ChampionIcons masteryPoints={masteryPoints} />
     </View>
   );
 }

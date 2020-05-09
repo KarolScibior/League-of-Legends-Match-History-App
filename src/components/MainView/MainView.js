@@ -16,6 +16,7 @@ const MainView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     backgroundColor: theme.colors.background,
     alignItems: 'center',
     marginTop: 24

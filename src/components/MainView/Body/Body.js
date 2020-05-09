@@ -34,7 +34,7 @@ const Body = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.mainContainer}>
+    <ScrollView contentContainerStyle={styles.container}>
       {
         renderProfile()
       }
@@ -45,7 +45,6 @@ const Body = () => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    padding: 8,
     alignItems: 'center'
   }
 });
