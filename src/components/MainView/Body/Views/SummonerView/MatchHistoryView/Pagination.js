@@ -7,8 +7,16 @@ import { actions } from '../../../../../../redux/ducks';
 
 const Pagination = () => {
   const dispatch = useDispatch();
-  const changePagination = (number, type) => dispatch(actions.changePagination(number, type));
+  const dispatchPagination = (number, type) => dispatch(actions.changePagination(number, type));
+  const pullMatchHistory = (accountId, beginIndex, endIndex) => dispatch(actions.pullMatchHistory(accountId, beginIndex, endIndex));
   const pagination = useSelector(state => state.pagination);
+  const summonerInfo = useSelector(state => state.summonerInfo);
+
+  const changePagination = async (number, type) => {
+    await dispatchPagination(number, type);
+    console.log(pagination.beginIndex, pagination.endIndex);
+    await pullMatchHistory(summonerInfo.accountId, pagination.beginIndex, pagination.endIndex);
+  };
 
   const goLeft = () => {
     if (pagination.firstPage !== pagination.currentPage) {

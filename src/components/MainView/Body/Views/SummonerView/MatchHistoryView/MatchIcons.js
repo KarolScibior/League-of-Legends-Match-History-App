@@ -5,6 +5,9 @@ import BoldText from '../../../../../CustomText/BoldText';
 import theme from '../../../../../../utils/theme';
 
 const MatchIcons = () => {
+  const matches = useSelector(state => state.matches);
+
+  console.log(matches);
 
   const renderMatches = () => {
     /*if (championsInfo.length !== 0 && masteryPoints !== undefined) {

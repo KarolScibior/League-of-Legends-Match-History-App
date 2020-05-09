@@ -17,6 +17,7 @@ export const ADD_MATCH_HISTORY = 'ADD_MATCH_HISTORY';
 export const ADD_TOTAL_GAMES = 'ADD_TOTAL_GAMES';
 export const ADD_LAST_PAGINATION_PAGE = 'ADD_LAST_PAGINATION_PAGE';
 export const CHANGE_PAGINATION = 'CHANGE_PAGINATION';
+export const RESET_PAGINATION = 'RESET_PAGINATION';
 
 export const actions = {
   setView: view => ({
@@ -55,10 +56,13 @@ export const actions = {
     type: CHANGE_PAGINATION,
     payload: { number, type }
   }),
+  resetPagination: () => ({ type: RESET_PAGINATION }),
   resetChampionsData: () => ({ type: RESET_CHAMPIONS_DATA }),
   pullSummonerInfo: summonerName => (async dispatch => {
     dispatch(actions.setView('loading'));
     dispatch(actions.resetChampionsData());
+    dispatch(actions.resetPagination());
+    console.log(store.getState().pagination);
     await axios
       .get(`https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`, {
         headers: {
@@ -134,6 +138,7 @@ export const actions = {
       })
   }),
   pullMatchHistory: (accountId, beginIndex, endIndex) => (async dispatch => {
+    console.log(accountId, beginIndex, endIndex);
     await axios
       .get(`https://eun1.api.riotgames.com/lol/match/v4/matchlists/by-account/${accountId}?endIndex=${endIndex}&beginIndex=${beginIndex}`, {
         headers: {
@@ -183,113 +188,127 @@ export default rootReducer = (state = initialState, action) => {
         summonerInfo: action.payload,
       }
 
-      case ADD_CHAMPIONS_MASTERY:
-        return {
-          ...state,
-          championsMastery: action.payload
-        }
+    case ADD_CHAMPIONS_MASTERY:
+      return {
+        ...state,
+        championsMastery: action.payload
+      }
 
-      case ADD_CHAMPION_DATA:
-        return {
-          ...state,
-          championsData: [...state.championsData, action.payload]
-        }
+    case ADD_CHAMPION_DATA:
+      return {
+        ...state,
+        championsData: [...state.championsData, action.payload]
+      }
 
-      case RESET_CHAMPIONS_DATA:
-        return {
-          ...state,
-          championsData: []
-        }
+    case RESET_CHAMPIONS_DATA:
+      return {
+        ...state,
+        championsData: []
+      }
 
-      case ADD_RANKED_INFO:
-        return {
-          ...state,
-          rankedInfo: action.payload
-        }
+    case ADD_RANKED_INFO:
+      return {
+        ...state,
+        rankedInfo: action.payload
+      }
 
-      case ADD_MATCH_HISTORY:
-        return {
-          ...state,
-          matches: action.payload
-        }
+    case ADD_MATCH_HISTORY:
+      return {
+        ...state,
+        matches: action.payload
+      }
 
-      case ADD_TOTAL_GAMES:
-        return {
-          ...state,
-          matches: action.payload
-        }
+    case ADD_TOTAL_GAMES:
+      return {
+        ...state,
+        matches: action.payload
+      }
 
-      case ADD_LAST_PAGINATION_PAGE:
-        return {
-          ...state,
-          pagination: {
-            ...state.pagination,
-            lastPage: action.payload
+    case ADD_LAST_PAGINATION_PAGE:
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          lastPage: action.payload
+        }
+      }
+
+    case CHANGE_PAGINATION:
+      const p = state.pagination;
+      switch (action.payload.type) {
+        case 'left':
+          return {
+            ...state,
+            pagination: {
+              ...p,
+              beginIndex: p.beginIndex - 5,
+              endIndex: p.endIndex - 5,
+              currentPage: p.currentPage - 1
+            }
           }
+
+        case 'right':
+          return {
+            ...state,
+            pagination: {
+              ...p,
+              beginIndex: p.beginIndex + 5,
+              endIndex: p.endIndex + 5,
+              currentPage: p.currentPage + 1
+            }
+          }
+
+        case 'index':
+          const { number } = action.payload;
+            return {
+              ...state,
+              pagination: {
+                ...p,
+                beginIndex: (number * 5) - 5,
+                endIndex: (number * 5) + 5,
+                currentPage: number
+              }
+            }
+
+        case 'first':
+          return {
+            ...state,
+            pagination: {
+              ...p,
+              beginIndex: 0,
+              endIndex: 5,
+              currentPage: p.firstPage
+            }
+          }
+
+        case 'last':
+          return {
+            ...state,
+            pagination: {
+              ...p,
+              beginIndex: p.lastPage - 5,
+              endIndex: state.totalGames,
+              currentPage: p.lastPage
+            }
+          }
+
+        default:
+          return state;
+      }
+
+    case RESET_PAGINATION:
+      return {
+        ...state,
+        pagination: {
+          pagination: {
+            beginIndex: 0,
+            endIndex: 5,
+            firstPage: 1,
+            lastPage: 0,
+            currentPage: 1
+          },
         }
-
-      case CHANGE_PAGINATION:
-        const p = state.pagination;
-        switch (action.payload.type) {
-          case 'left':
-            return {
-              ...state,
-              pagination: {
-                ...p,
-                beginIndex: p.beginIndex - 5,
-                endIndex: p.endIndex - 5,
-                currentPage: p.currentPage - 1
-              }
-            }
-
-          case 'right':
-            return {
-              ...state,
-              pagination: {
-                ...p,
-                beginIndex: p.beginIndex + 5,
-                endIndex: p.endIndex + 5,
-                currentPage: p.currentPage + 1
-              }
-            }
-
-          case 'index':
-            const { number } = action.payload;
-              return {
-                ...state,
-                pagination: {
-                  ...p,
-                  beginIndex: (number * 5) - 5,
-                  endIndex: (number * 5) + 5,
-                  currentPage: number
-                }
-              }
-
-          case 'first':
-            return {
-              ...state,
-              pagination: {
-                ...p,
-                beginIndex: 0,
-                endIndex: 5,
-                currentPage: p.firstPage
-              }
-            }
-
-            case 'last':
-            return {
-              ...state,
-              pagination: {
-                ...p,
-                beginIndex: p.lastPage - 5,
-                endIndex: state.totalGames,
-                currentPage: p.lastPage
-              }
-            }
-
-            default:
-              return state;
-        }
+      }
 
     default:
       return state;
