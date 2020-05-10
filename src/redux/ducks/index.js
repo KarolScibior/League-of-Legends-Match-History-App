@@ -17,6 +17,9 @@ export const ADD_MATCH_HISTORY = 'ADD_MATCH_HISTORY';
 export const ADD_TOTAL_GAMES = 'ADD_TOTAL_GAMES';
 export const ADD_LAST_PAGINATION_PAGE = 'ADD_LAST_PAGINATION_PAGE';
 export const CHANGE_PAGINATION = 'CHANGE_PAGINATION';
+export const PULL_MATCH_DATA = 'PULL_MATCH_DATA';
+export const ADD_MATCH_DATA = 'ADD_MATCH_DATA';
+export const RESET_MATCH_DATA = 'RESET_MATCH_DATA';
 
 export const actions = {
   setView: view => ({
@@ -51,6 +54,10 @@ export const actions = {
     type: ADD_LAST_PAGINATION_PAGE,
     payload: number
   }),
+  addMatchData: matchData => ({
+    type: ADD_MATCH_DATA,
+    payload: matchData
+  }),
   changePagination: (number, type) => ({
     type: CHANGE_PAGINATION,
     payload: { number, type }
@@ -59,6 +66,7 @@ export const actions = {
     type: RESET_CHAMPIONS_DATA,
     payload: type
   }),
+  resetMatchData: () => ({ type: RESET_MATCH_DATA }),
   pullSummonerInfo: summonerName => (async dispatch => {
     dispatch(actions.setView('loading'));
     dispatch(actions.resetChampionsData('mastery'));
@@ -151,18 +159,43 @@ export const actions = {
         }
       })
       .then(async res => {
-        dispatch(actions.addTotalGames(res.data.totalGames));
+        //dispatch(actions.addTotalGames(res.data.totalGames));
         //dispatch(actions.addLastPaginationPage(Math.ceil(res.data.totalGames / 5)));
         dispatch(actions.addMatchHistory(res.data.matches));
         dispatch(actions.resetChampionsData('matches'));
+        dispatch(actions.resetMatchData());
+        //
+        //       TO NA DOLE TO JEST NIEPOPRAWNIE NA MAKSA, ALE NIE WIEM ZA BARDZO JAK
+        //       DISPATCHOWAĆ W PĘTLI, A JAK PRÓBUJE TO MI SIĘ WYWALA WSZYSTKO, TAKŻE
+        //       NA RAZIE IDZIEMY DALEJ, KIEDYŚ TU WRÓCIMY OKI DZIĘKI POZDRAWIAM
+        //
         await dispatch(actions.pullChampionData(res.data.matches[0].champion, 'matches'));
+        await dispatch(actions.pullMatchData(res.data.matches[0].gameId));
         await dispatch(actions.pullChampionData(res.data.matches[1].champion, 'matches'));
+        await dispatch(actions.pullMatchData(res.data.matches[1].gameId));
         await dispatch(actions.pullChampionData(res.data.matches[2].champion, 'matches'));
+        await dispatch(actions.pullMatchData(res.data.matches[2].gameId));
         await dispatch(actions.pullChampionData(res.data.matches[3].champion, 'matches'));
+        await dispatch(actions.pullMatchData(res.data.matches[3].gameId));
         await dispatch(actions.pullChampionData(res.data.matches[4].champion, 'matches'));
       })
       .catch(err => {
         console.log('pull match history error', err.toString());
+        dispatch(actions.setView('error'));
+      })
+  }),
+  pullMatchData: matchId => (async dispatch => {
+    await axios
+      .get(`https://eun1.api.riotgames.com/lol/match/v4/matches/${matchId}`, {
+        headers: {
+          'X-Riot-Token': API_KEY
+        }
+      })
+      .then(res => {
+        dispatch(actions.addMatchData(res.data));
+      })
+      .catch(err => {
+        console.log('pull match data error', err.toString());
         dispatch(actions.setView('error'));
       })
   })
@@ -183,7 +216,8 @@ const initialState = {
   },
   totalGames: 0,
   matches: [],
-  matchesChampionsData: []
+  matchesChampionsData: [],
+  matchesData: []
 };
 
 export default rootReducer = (state = initialState, action) => {
@@ -320,6 +354,18 @@ export default rootReducer = (state = initialState, action) => {
 
         default:
           return state;
+      }
+
+    case ADD_MATCH_DATA:
+      return {
+        ...state,
+        matchesData: [...state.matchesData, action.payload]
+      }
+
+    case RESET_MATCH_DATA:
+      return {
+        ...state,
+        matchesData: []
       }
 
     default:

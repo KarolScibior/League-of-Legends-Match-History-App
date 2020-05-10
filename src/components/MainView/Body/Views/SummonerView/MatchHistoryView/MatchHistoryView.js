@@ -5,6 +5,7 @@ import theme from '../../../../../../utils/theme';
 import MatchIcons from './MatchIcons';
 import Pagination from './Pagination';
 import { actions } from '../../../../../../redux/ducks';
+import BoldText from '../../../../../CustomText/BoldText';
 
 const MatchHistoryView = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ const MatchHistoryView = () => {
 
   return (
     <View style={styles.mainContainer}>
+      <BoldText style={styles.title} text='Match History' />
       <MatchIcons />
       <Pagination />
     </View>

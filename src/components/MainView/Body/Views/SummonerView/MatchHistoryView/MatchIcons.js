@@ -8,7 +8,7 @@ const MatchIcons = () => {
   const matches = useSelector(state => state.matches);
   const matchesChampions = useSelector(state => state.matchesChampionsData);
 
-  console.log(matches);
+  //console.log(matches);
 
   const renderMatches = () => {
     if (matchesChampions.length !== 0 ) {
@@ -31,7 +31,7 @@ const MatchIcons = () => {
       });
     } else {
       return (
-        <BoldText style={styles.secondaryText} text='Matches here' />
+        <BoldText style={styles.secondaryText} text='Loading...' />
       )
     }
   };

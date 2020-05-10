@@ -71,9 +71,6 @@ const Pagination = () => {
       return (
         <>
           <BoldText text='...' />
-          <TouchableOpacity style={styles.paginationItem} onPress={() => goIndex(pagination.currentPage - 2)}>
-            <BoldText text={pagination.currentPage - 2} />
-          </TouchableOpacity>
           <TouchableOpacity style={styles.paginationItem} onPress={() => goIndex(pagination.currentPage - 1)}>
             <BoldText text={pagination.currentPage - 1} />
           </TouchableOpacity>
@@ -82,9 +79,6 @@ const Pagination = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.paginationItem} onPress={() => goIndex(pagination.currentPage + 1)}>
             <BoldText text={pagination.currentPage + 1} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.paginationItem} onPress={() => goIndex(pagination.currentPage + 2)}>
-            <BoldText text={pagination.currentPage + 2} />
           </TouchableOpacity>
           <BoldText text='...' />
         </>
