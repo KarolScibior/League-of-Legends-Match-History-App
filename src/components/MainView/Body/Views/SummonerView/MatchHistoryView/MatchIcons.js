@@ -6,12 +6,13 @@ import theme from '../../../../../../utils/theme';
 
 const MatchIcons = () => {
   const matches = useSelector(state => state.matches);
+  const matchesChampions = useSelector(state => state.matchesChampionsData);
 
-  //console.log(matches);
+  console.log(matches);
 
   const renderMatches = () => {
-    /*if (championsInfo.length !== 0 && masteryPoints !== undefined) {
-      return championsInfo.map((item, index) => {
+    if (matchesChampions.length !== 0 ) {
+      return matchesChampions.map((item, index) => {
         const championName = item[0];
         const championTitle = Object.entries(item[1])[4][1];
         return (
@@ -24,17 +25,15 @@ const MatchIcons = () => {
             <View style={styles.container}>
               <BoldText style={styles.championName} text={championName}/>
               <BoldText style={styles.championTitle} text={championTitle} />
-              <BoldText style={styles.masteryLevel} text={`Mastery level: ${masteryPoints[index].championLevel}`}/>
-              <BoldText style={styles.masteryPoints} text={`Mastery points: ${masteryPoints[index].championPoints}`} />
             </View>
           </View>
         )
       });
-    } else {*/
+    } else {
       return (
         <BoldText style={styles.secondaryText} text='Matches here' />
       )
-    //}
+    }
   };
 
   return (
@@ -78,13 +77,6 @@ const styles = StyleSheet.create({
   championTitle: {
     color: theme.colors.secondaryText,
     fontSize: 12
-  },
-  masteryLevel: {
-    color: theme.colors.primary,
-    fontSize: 16
-  },
-  masteryPoints: {
-    color: theme.colors.primary
   }
 });
 

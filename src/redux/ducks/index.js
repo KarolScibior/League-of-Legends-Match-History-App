@@ -35,9 +35,9 @@ export const actions = {
     type: ADD_CHAMPIONS_MASTERY,
     payload: championsMastery
   }),
-  addChampionData: championData => ({
+  addChampionData: (championData, type) => ({
     type: ADD_CHAMPION_DATA,
-    payload: championData
+    payload: { championData, type }
   }),
   addMatchHistory: matches => ({
     type: ADD_MATCH_HISTORY,
@@ -55,12 +55,15 @@ export const actions = {
     type: CHANGE_PAGINATION,
     payload: { number, type }
   }),
-  resetChampionsData: () => ({ type: RESET_CHAMPIONS_DATA }),
+  resetChampionsData: type => ({
+    type: RESET_CHAMPIONS_DATA,
+    payload: type
+  }),
   pullSummonerInfo: summonerName => (async dispatch => {
     dispatch(actions.setView('loading'));
-    dispatch(actions.resetChampionsData());
+    dispatch(actions.resetChampionsData('mastery'));
+    dispatch(actions.resetChampionsData('matches'));
     dispatch(actions.changePagination(0, 'first'));
-    console.log(store.getState().pagination);
     await axios
       .get(`https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`, {
         headers: {
@@ -106,9 +109,9 @@ export const actions = {
       })
       .then(async res => {
         const topThree = res.data.slice(0, 3);
-        await dispatch(actions.pullChampionData(topThree[0].championId));
-        await dispatch(actions.pullChampionData(topThree[1].championId));
-        await dispatch(actions.pullChampionData(topThree[2].championId));
+        await dispatch(actions.pullChampionData(topThree[0].championId, 'mastery'));
+        await dispatch(actions.pullChampionData(topThree[1].championId, 'mastery'));
+        await dispatch(actions.pullChampionData(topThree[2].championId, 'mastery'));
         dispatch(actions.addChampionsMastery(topThree));
       })
       .catch(err => {
@@ -116,7 +119,7 @@ export const actions = {
         dispatch(actions.setView('error'));
       })
   }),
-  pullChampionData: championId => (async dispatch => {
+  pullChampionData: (championId, type) => (async dispatch => {
     await axios
       .get(`http://ddragon.leagueoflegends.com/cdn/${LEAGUE_PATCH}/data/en_US/champion.json`)
       .then(res => {
@@ -128,7 +131,12 @@ export const actions = {
             championData = item;
           };
         })
-        dispatch(actions.addChampionData(championData));
+        if (type === 'mastery') {
+          dispatch(actions.addChampionData(championData, 'mastery'));
+        } else if (type === 'matches') {
+          dispatch(actions.addChampionData(championData, 'matches'));
+        }
+
       })
       .catch(err => {
         console.log('pull champion data error', err.toString());
@@ -136,17 +144,22 @@ export const actions = {
       })
   }),
   pullMatchHistory: (accountId, beginIndex, endIndex) => (async dispatch => {
-    console.log(beginIndex, endIndex);
     await axios
       .get(`https://eun1.api.riotgames.com/lol/match/v4/matchlists/by-account/${accountId}?endIndex=${endIndex}&beginIndex=${beginIndex}`, {
         headers: {
           'X-Riot-Token': API_KEY
         }
       })
-      .then(res => {
+      .then(async res => {
         dispatch(actions.addTotalGames(res.data.totalGames));
         //dispatch(actions.addLastPaginationPage(Math.ceil(res.data.totalGames / 5)));
         dispatch(actions.addMatchHistory(res.data.matches));
+        dispatch(actions.resetChampionsData('matches'));
+        await dispatch(actions.pullChampionData(res.data.matches[0].champion, 'matches'));
+        await dispatch(actions.pullChampionData(res.data.matches[1].champion, 'matches'));
+        await dispatch(actions.pullChampionData(res.data.matches[2].champion, 'matches'));
+        await dispatch(actions.pullChampionData(res.data.matches[3].champion, 'matches'));
+        await dispatch(actions.pullChampionData(res.data.matches[4].champion, 'matches'));
       })
       .catch(err => {
         console.log('pull match history error', err.toString());
@@ -159,7 +172,7 @@ const initialState = {
   view: 'regular',
   summonerInfo: {},
   championsMastery: [],
-  championsData: [],
+  masteryChampionsData: [],
   rankedInfo: {},
   pagination: {
     beginIndex: 0,
@@ -169,7 +182,8 @@ const initialState = {
     currentPage: 1
   },
   totalGames: 0,
-  matches: []
+  matches: [],
+  matchesChampionsData: []
 };
 
 export default rootReducer = (state = initialState, action) => {
@@ -193,15 +207,29 @@ export default rootReducer = (state = initialState, action) => {
       }
 
     case ADD_CHAMPION_DATA:
-      return {
-        ...state,
-        championsData: [...state.championsData, action.payload]
+      if (action.payload.type === 'mastery') {
+        return {
+          ...state,
+          masteryChampionsData: [...state.masteryChampionsData, action.payload.championData]
+        }
+      } else if (action.payload.type === 'matches') {
+        return {
+          ...state,
+          matchesChampionsData: [...state.matchesChampionsData, action.payload.championData]
+        }
       }
 
     case RESET_CHAMPIONS_DATA:
-      return {
-        ...state,
-        championsData: []
+      if (action.payload === 'mastery') {
+        return {
+          ...state,
+          masteryChampionsData: []
+        }
+      } else if (action.payload === 'matches') {
+        return {
+          ...state,
+          matchesChampionsData: []
+        }
       }
 
     case ADD_RANKED_INFO:

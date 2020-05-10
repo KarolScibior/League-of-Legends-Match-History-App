@@ -9,13 +9,13 @@ const Pagination = () => {
   const dispatch = useDispatch();
   const dispatchPagination = (number, type) => dispatch(actions.changePagination(number, type));
   const pullMatchHistory = (accountId, beginIndex, endIndex) => dispatch(actions.pullMatchHistory(accountId, beginIndex, endIndex));
+  const resetMatchesChampionsData = (type) => dispatch(actions.resetChampionsData(type));
   const pagination = useSelector(state => state.pagination);
   const summonerInfo = useSelector(state => state.summonerInfo);
 
   const changePagination = async (number, type) => {
-    await dispatchPagination(number, type);
-    console.log(pagination);
-    await pullMatchHistory(summonerInfo.accountId, pagination.beginIndex, pagination.endIndex);
+    resetMatchesChampionsData('matches');
+    dispatchPagination(number, type);
   };
 
   const goLeft = () => {
@@ -124,7 +124,6 @@ const Pagination = () => {
 
   return (
     <View style={styles.container}>
-      <BoldText text='pagination' />
       <View style={styles.paginationContainer}>
         <TouchableOpacity style={styles.paginationItem} disabled={disableLeft()} onPress={goLeft}>
           <BoldText text='<' />

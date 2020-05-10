@@ -5,7 +5,7 @@ import BoldText from '../../../../../CustomText/BoldText';
 import theme from '../../../../../../utils/theme';
 
 const ChampionIcons = ({ masteryPoints }) => {
-  const championsInfo = useSelector(state => state.championsData);
+  const championsInfo = useSelector(state => state.masteryChampionsData);
 
   const renderChampion = () => {
     if (championsInfo.length !== 0 && masteryPoints !== undefined) {
