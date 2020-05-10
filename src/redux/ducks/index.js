@@ -17,7 +17,6 @@ export const ADD_MATCH_HISTORY = 'ADD_MATCH_HISTORY';
 export const ADD_TOTAL_GAMES = 'ADD_TOTAL_GAMES';
 export const ADD_LAST_PAGINATION_PAGE = 'ADD_LAST_PAGINATION_PAGE';
 export const CHANGE_PAGINATION = 'CHANGE_PAGINATION';
-export const RESET_PAGINATION = 'RESET_PAGINATION';
 
 export const actions = {
   setView: view => ({
@@ -56,12 +55,11 @@ export const actions = {
     type: CHANGE_PAGINATION,
     payload: { number, type }
   }),
-  resetPagination: () => ({ type: RESET_PAGINATION }),
   resetChampionsData: () => ({ type: RESET_CHAMPIONS_DATA }),
   pullSummonerInfo: summonerName => (async dispatch => {
     dispatch(actions.setView('loading'));
     dispatch(actions.resetChampionsData());
-    dispatch(actions.resetPagination());
+    dispatch(actions.changePagination(0, 'first'));
     console.log(store.getState().pagination);
     await axios
       .get(`https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`, {
@@ -138,7 +136,7 @@ export const actions = {
       })
   }),
   pullMatchHistory: (accountId, beginIndex, endIndex) => (async dispatch => {
-    console.log(accountId, beginIndex, endIndex);
+    console.log(beginIndex, endIndex);
     await axios
       .get(`https://eun1.api.riotgames.com/lol/match/v4/matchlists/by-account/${accountId}?endIndex=${endIndex}&beginIndex=${beginIndex}`, {
         headers: {
@@ -147,7 +145,7 @@ export const actions = {
       })
       .then(res => {
         dispatch(actions.addTotalGames(res.data.totalGames));
-        dispatch(actions.addLastPaginationPage(Math.ceil(res.data.totalGames / 5)));
+        //dispatch(actions.addLastPaginationPage(Math.ceil(res.data.totalGames / 5)));
         dispatch(actions.addMatchHistory(res.data.matches));
       })
       .catch(err => {
@@ -167,7 +165,7 @@ const initialState = {
     beginIndex: 0,
     endIndex: 5,
     firstPage: 1,
-    lastPage: 0,
+    lastPage: 30,
     currentPage: 1
   },
   totalGames: 0,
@@ -265,7 +263,7 @@ export default rootReducer = (state = initialState, action) => {
               pagination: {
                 ...p,
                 beginIndex: (number * 5) - 5,
-                endIndex: (number * 5) + 5,
+                endIndex: (number * 5),
                 currentPage: number
               }
             }
@@ -286,28 +284,14 @@ export default rootReducer = (state = initialState, action) => {
             ...state,
             pagination: {
               ...p,
-              beginIndex: p.lastPage - 5,
-              endIndex: state.totalGames,
+              beginIndex: (p.lastPage * 5) - 5,
+              endIndex: (p.lastPage * 5 ),
               currentPage: p.lastPage
             }
           }
 
         default:
           return state;
-      }
-
-    case RESET_PAGINATION:
-      return {
-        ...state,
-        pagination: {
-          pagination: {
-            beginIndex: 0,
-            endIndex: 5,
-            firstPage: 1,
-            lastPage: 0,
-            currentPage: 1
-          },
-        }
       }
 
     default:

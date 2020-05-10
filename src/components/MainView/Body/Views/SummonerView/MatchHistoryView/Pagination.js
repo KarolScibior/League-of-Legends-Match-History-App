@@ -14,7 +14,7 @@ const Pagination = () => {
 
   const changePagination = async (number, type) => {
     await dispatchPagination(number, type);
-    console.log(pagination.beginIndex, pagination.endIndex);
+    console.log(pagination);
     await pullMatchHistory(summonerInfo.accountId, pagination.beginIndex, pagination.endIndex);
   };
 
