@@ -15,6 +15,7 @@ const MatchIcon = props => {
         modalVisibility={modalVisibility}
         setModalVisibility={setModalVisibility}
         championName={championName}
+        index={index}
         win={win}
         championsKDA={championsKDA}
         gameDuration={gameDuration}

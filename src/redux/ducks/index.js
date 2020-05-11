@@ -3,23 +3,18 @@ import { LEAGUE_PATCH, API_KEY } from 'react-native-dotenv';
 import store from '../store';
 
 export const SET_VIEW = 'SET_VIEW';
-export const PULL_SUMMONER_INFO = 'PULL_SUMMONER_INFO';
 export const ADD_SUMMONER_INFO = 'ADD_SUMMONER_INFO';
-export const PULL_RANKED_INFO = 'PULL_RANKED_INFO';
 export const ADD_RANKED_INFO = 'ADD_RANKED_INFO';
-export const PULL_CHAMPIONS_MASTERY = 'PULL_CHAMPIONS_MASTERY';
 export const ADD_CHAMPIONS_MASTERY = 'ADD_CHAMPIONS_MASTERY';
-export const PULL_CHAMPION_DATA = 'PULL_CHAMPION_DATA';
 export const ADD_CHAMPION_DATA = 'ADD_CHAMPION_DATA';
 export const RESET_CHAMPIONS_DATA = 'RESET_CHAMPIONS_DATA';
-export const PULL_MATCH_HISTORY = 'PULL_MATCH_HISTORY';
 export const ADD_MATCH_HISTORY = 'ADD_MATCH_HISTORY';
 export const ADD_TOTAL_GAMES = 'ADD_TOTAL_GAMES';
 export const ADD_LAST_PAGINATION_PAGE = 'ADD_LAST_PAGINATION_PAGE';
 export const CHANGE_PAGINATION = 'CHANGE_PAGINATION';
-export const PULL_MATCH_DATA = 'PULL_MATCH_DATA';
 export const ADD_MATCH_DATA = 'ADD_MATCH_DATA';
 export const RESET_MATCH_DATA = 'RESET_MATCH_DATA';
+export const ADD_SUMMONER_SPELLS = 'ADD_SUMMONER_SPELLS';
 
 export const actions = {
   setView: view => ({
@@ -65,6 +60,10 @@ export const actions = {
   resetChampionsData: type => ({
     type: RESET_CHAMPIONS_DATA,
     payload: type
+  }),
+  addSummonerSpells: summonerSpells => ({
+    type: PULL_SUMMONER_SPELLS,
+    payload: summonerSpells
   }),
   resetMatchData: () => ({ type: RESET_MATCH_DATA }),
   pullSummonerInfo: summonerName => (async dispatch => {
@@ -199,6 +198,17 @@ export const actions = {
         console.log('pull match data error', err.toString());
         dispatch(actions.setView('error'));
       })
+  }),
+  pullSummonerSpells: () => (async dispatch => {
+    await axios
+      .get(`http://ddragon.leagueoflegends.com/cdn/${LEAGUE_PATCH}/data/en_US/summoner.json`)
+      .then(res => {
+        dispatch(actions.addSummonerSpells(res.data));
+      })
+      .catch(err => {
+        console.log('pull summoner spells error', err.toString());
+        dispatch(actions.setView('error'));
+      })
   })
 };
 
@@ -218,7 +228,8 @@ const initialState = {
   totalGames: 0,
   matches: [],
   matchesChampionsData: [],
-  matchesData: []
+  matchesData: [],
+  summonerSpells: {}
 };
 
 export default rootReducer = (state = initialState, action) => {
@@ -367,6 +378,12 @@ export default rootReducer = (state = initialState, action) => {
       return {
         ...state,
         matchesData: []
+      }
+
+    case ADD_SUMMONER_SPELLS:
+      return {
+        ...state,
+        summonerSpells: action.payload
       }
 
     default:
