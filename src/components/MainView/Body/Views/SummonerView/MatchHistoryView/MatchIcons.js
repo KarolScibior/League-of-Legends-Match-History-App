@@ -1,12 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import AnimatedEllipsis from 'react-native-animated-ellipsis';
 import BoldText from '../../../../../CustomText/BoldText';
 import theme from '../../../../../../utils/theme';
+import MatchIcon from './MatchIcon';
 
 const MatchIcons = () => {
-  const matches = useSelector(state => state.matches);
   const matchesChampions = useSelector(state => state.matchesChampionsData);
   const matchesData = useSelector(state => state.matchesData);
 
@@ -39,7 +39,6 @@ const MatchIcons = () => {
       const championsKDA = extractChampionData();
       return matchesChampions.map((item, index) => {
         const championName = item[0];
-        const championTitle = Object.entries(item[1])[4][1];
         let win = '';
         if (championsKDA[index].win === true) {
           win = 'VICTORY'
@@ -50,21 +49,7 @@ const MatchIcons = () => {
         const gameDuration = `${Math.ceil(Number(matchesData[index].gameDuration) / 60)}:${Number(matchesData[index].gameDuration) % 60}`;
 
         return (
-          <TouchableOpacity key={index} style={styles.championContainer}>
-            <View key={index} style={styles.championContainer}>
-              <Image
-                style={styles.championIcon}
-                key={index}
-                source={{ uri: `http://ddragon.leagueoflegends.com/cdn/10.9.1/img/champion/${championName}.png`}}
-              />
-              <View style={styles.container}>
-                <BoldText style={win === 'VICTORY' ? styles.win : styles.defeat} text={win} />
-                <BoldText style={styles.championTitle} text={matchesData[index].gameMode} />
-                <BoldText style={styles.kda} text={`KDA: ${championsKDA[index].k}/${championsKDA[index].d}/${championsKDA[index].a}, CS: ${championsKDA[index].cs}`} />
-                <BoldText style={styles.championName} text={gameDuration} />
-              </View>
-            </View>
-          </TouchableOpacity>
+          <MatchIcon key={index} index={index} championName={championName} win={win} championsKDA={championsKDA} gameDuration={gameDuration} matchesData={matchesData} />
         )
       });
     } else {
