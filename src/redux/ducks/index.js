@@ -178,6 +178,7 @@ export const actions = {
         await dispatch(actions.pullChampionData(res.data.matches[3].champion, 'matches'));
         await dispatch(actions.pullMatchData(res.data.matches[3].gameId));
         await dispatch(actions.pullChampionData(res.data.matches[4].champion, 'matches'));
+        await dispatch(actions.pullMatchData(res.data.matches[4].gameId));
       })
       .catch(err => {
         console.log('pull match history error', err.toString());
